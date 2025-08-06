@@ -1,0 +1,76 @@
+# cursor.rules
+
+# === ESTILO DE CÓDIGO ===
+code_style:
+  language: typescript
+  naming_convention: camelCase
+  variable_names: 
+    - deben ser descriptivas y en inglés
+  function_names:
+    - deben describir qué hacen
+    - usar verbos si son acciones (e.g., handleClick)
+  max_lines_per_file: 100
+  max_lines_per_component: 50
+  prefer_arrow_functions: true
+  prefer_explicit_types: true
+  avoid_abbreviations: true
+
+# === ESTRUCTURA DEL CÓDIGO ===
+architecture:
+  - cada componente debe estar en su propio archivo
+  - cada componente debe ser pequeño, reutilizable y enfocado en una sola responsabilidad (SRP)
+  - extraer hooks personalizados si hay lógica compartida
+  - no repetir lógica: DRY
+  - separar componentes UI y lógica si el componente crece
+
+# === CLEAN CODE PRINCIPLES ===
+clean_code:
+  - código legible antes que optimizado prematuramente
+  - evitar comentarios innecesarios, el código debe explicarse solo
+  - mantener funciones puras cuando sea posible
+  - evitar side effects inesperados
+  - cada archivo debe tener una única responsabilidad
+
+# === TESTING ===
+testing:
+  framework: vitest
+  coverage:
+    - todos los componentes deben tener test unitario
+    - testear comportamiento, no implementación
+  file_structure:
+    - tests deben estar en la carpeta `__tests__` al lado del componente
+    - usar `ComponentName.test.tsx` como convención
+  buenas_practicas:
+    - usar mocks cuando haga falta
+    - evitar test frágiles (que rompen por cambios menores de UI)
+    - testear estados importantes, interacciones y flujo básico
+
+# === UI/UX ===
+ui_ux:
+  - debe verse moderno, útil y limpio
+  - layout responsivo por defecto
+  - usar TailwindCSS para todo el estilo
+  - evitar librerías externas para UI y animaciones
+  - preferir animaciones suaves usando solo CSS
+  - usar `rem` y `em` para espaciado, no `px` fijos
+  - dark mode por defecto
+
+# === PERFORMANCE ===
+performance:
+  - evitar renders innecesarios
+  - usar memoización solo si es necesario
+  - lazy loading si hay componentes pesados
+
+# === DOCUMENTACIÓN Y ORGANIZACIÓN ===
+documentation:
+  - cada hook y componente con prop types debe tener un pequeño comentario explicativo si no es obvio
+  - mantener el README actualizado con cómo arrancar, testear y desarrollar
+  - evitar comentarios redundantes tipo “// handle click” en `handleClick`
+
+# === TIPS ADICIONALES PARA CURSOR ===
+cursor_behavior:
+  - generar primero la estructura básica, luego el detalle
+  - no generar código boilerplate innecesario
+  - cuando pidas un componente nuevo, pregunta si necesita tests o no
+  - sugiere extraer lógica a hooks si hay más de 2 efectos o más de 3 estados
+
