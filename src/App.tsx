@@ -47,7 +47,7 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4 relative z-10 min-h-0">
-        <div className="max-w-4xl w-full h-full">
+        <div className="w-full h-full">
           {mode === 'pomodoro' ? <PomodoroTimer /> : <FocusMode />}
         </div>
       </main>

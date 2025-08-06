@@ -71,19 +71,47 @@ function SoundPlayer() {
       
       {/* Sound Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {sounds.map((sound) => (
-          <button
-            key={sound.name}
-            onClick={() => playSound(sound.name)}
-            className={`p-4 rounded-xl font-medium transition-all duration-200 ${
-              currentSound === sound.name && isPlaying
-                ? 'bg-accent text-white shadow-lg'
-                : 'bg-primary/50 hover:bg-primary/70 text-text border border-timer/30'
-            }`}
-          >
-            {sound.label}
-          </button>
-        ))}
+        {sounds.map((sound) => {
+          const getBorderColor = (soundName: string) => {
+            switch (soundName) {
+              case 'white':
+                return 'border-white'
+              case 'brown':
+                return 'border-amber-600'
+              case 'pink':
+                return 'border-pink-400'
+              default:
+                return 'border-timer/30'
+            }
+          }
+          
+          const getBackgroundColor = (soundName: string) => {
+            switch (soundName) {
+              case 'white':
+                return 'bg-white'
+              case 'brown':
+                return 'bg-amber-600'
+              case 'pink':
+                return 'bg-pink-400'
+              default:
+                return 'bg-primary/50'
+            }
+          }
+          
+          return (
+            <button
+              key={sound.name}
+              onClick={() => playSound(sound.name)}
+              className={`p-4 rounded-xl font-medium transition-all duration-200 border-4 ${
+                currentSound === sound.name && isPlaying
+                  ? `${getBackgroundColor(sound.name)} text-black shadow-lg ${getBorderColor(sound.name)}`
+                  : `bg-primary/50 hover:bg-primary/70 text-text ${getBorderColor(sound.name)}`
+              }`}
+            >
+              {sound.label}
+            </button>
+          )
+        })}
       </div>
 
               {/* Controls */}

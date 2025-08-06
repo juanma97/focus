@@ -66,8 +66,8 @@ function PomodoroTimer() {
   const progress = ((isBreak ? config.breakDuration * 60 : config.workDuration * 60) - timeLeft) / (isBreak ? config.breakDuration * 60 : config.workDuration * 60)
 
   return (
-    <div className="w-full max-w-4xl mx-auto h-full flex flex-col">
-      <div className="card bg-timer/80 backdrop-blur-md flex-1 flex flex-col">
+    <div className="w-11/12 mx-auto h-full flex flex-col">
+      <div className="card bg-timer/40 backdrop-blur-md flex-1 flex flex-col">
         {/* Timer Display */}
         <div className="text-center mb-8 flex-1 flex flex-col justify-center">
           <div className="relative w-72 h-72 mx-auto mb-6">
