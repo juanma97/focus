@@ -10,6 +10,7 @@ function PomodoroTimer() {
   const [isRunning, setIsRunning] = useState(false)
   const [isBreak, setIsBreak] = useState(false)
   const [timeLeft, setTimeLeft] = useState(25 * 60) // 25 minutes in seconds
+
   const [config, setConfig] = useState<TimerConfig>({
     workDuration: 25,
     breakDuration: 5
@@ -42,6 +43,13 @@ function PomodoroTimer() {
     }
   }, [isRunning, isBreak, config])
 
+  // Update document title
+  useEffect(() => {
+    const mode = isBreak ? 'Descanso' : 'Trabajo'
+    const time = formatTime(timeLeft)
+    document.title = `${time} - ${mode} | PomodoroFocus`
+  }, [timeLeft, isBreak])
+
   const startTimer = () => {
     setIsRunning(true)
   }
@@ -55,6 +63,8 @@ function PomodoroTimer() {
     setIsBreak(false)
     setTimeLeft(config.workDuration * 60)
   }
+
+
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -124,6 +134,8 @@ function PomodoroTimer() {
             Reset
           </button>
         </div>
+
+
 
         {/* Configuration */}
         <div className="flex flex-col items-center gap-4 mb-6">

@@ -3,6 +3,7 @@ import PomodoroTimer from './components/PomodoroTimer'
 import FocusMode from './components/FocusMode'
 import AnimatedBackground from './components/AnimatedBackground'
 import BuyMeACoffee from './components/BuyMeACoffee'
+import FullscreenButton from './components/FullscreenButton'
 
 type Mode = 'pomodoro' | 'focus'
 
@@ -13,6 +14,9 @@ function App() {
     <div className="min-h-screen bg-primary flex flex-col relative">
       {/* Animated Background */}
       <AnimatedBackground />
+      
+      {/* Fullscreen Button */}
+      <FullscreenButton />
       
       {/* Buy Me a Coffee Button */}
       <BuyMeACoffee />
