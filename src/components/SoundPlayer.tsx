@@ -4,18 +4,39 @@ interface Sound {
   name: string
   file: string
   label: string
+  benefits: string
+  description: string
 }
 
 function SoundPlayer() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentSound, setCurrentSound] = useState<string | null>(null)
   const [volume, setVolume] = useState(0.5)
+  const [hoveredSound, setHoveredSound] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const sounds: Sound[] = [
-    { name: 'white', file: '/sounds/white-noise.mp3', label: 'Ruido Blanco' },
-    { name: 'brown', file: '/sounds/brown-noise.mp3', label: 'Ruido Marrón' },
-    { name: 'pink', file: '/sounds/pink-noise.mp3', label: 'Ruido Rosa' }
+    { 
+      name: 'white', 
+      file: '/sounds/white-noise.mp3', 
+      label: 'Ruido Blanco',
+      benefits: 'Concentración • Enmascaramiento • Neutralidad',
+      description: 'Ideal para bloquear distracciones y crear un ambiente de trabajo neutral. Mejora la concentración y reduce la fatiga auditiva.'
+    },
+    { 
+      name: 'brown', 
+      file: '/sounds/brown-noise.mp3', 
+      label: 'Ruido Marrón',
+      benefits: 'Relajación • Sueño • Meditación',
+      description: 'Sonido más profundo y relajante. Perfecto para reducir el estrés, mejorar el sueño y sesiones de meditación.'
+    },
+    { 
+      name: 'pink', 
+      file: '/sounds/pink-noise.mp3', 
+      label: 'Ruido Rosa',
+      benefits: 'Creatividad • Equilibrio • Armonía',
+      description: 'Balance perfecto entre concentración y relajación. Estimula la creatividad y mantiene un estado mental equilibrado.'
+    }
   ]
 
   const playSound = (soundName: string) => {
@@ -99,17 +120,38 @@ function SoundPlayer() {
           }
           
           return (
-            <button
-              key={sound.name}
-              onClick={() => playSound(sound.name)}
-              className={`p-4 rounded-xl font-medium transition-all duration-200 border-4 ${
-                currentSound === sound.name && isPlaying
-                  ? `${getBackgroundColor(sound.name)} text-black shadow-lg ${getBorderColor(sound.name)}`
-                  : `bg-primary/50 hover:bg-primary/70 text-text ${getBorderColor(sound.name)}`
-              }`}
-            >
-              {sound.label}
-            </button>
+            <div key={sound.name} className="relative group">
+              <button
+                onClick={() => playSound(sound.name)}
+                onMouseEnter={() => setHoveredSound(sound.name)}
+                onMouseLeave={() => setHoveredSound(null)}
+                className={`w-full p-4 rounded-xl font-medium transition-all duration-200 border-4 ${
+                  currentSound === sound.name && isPlaying
+                    ? `${getBackgroundColor(sound.name)} text-black shadow-lg ${getBorderColor(sound.name)}`
+                    : `bg-primary/50 hover:bg-primary/70 text-text ${getBorderColor(sound.name)}`
+                }`}
+              >
+                <div className="text-center">
+                  <div className="font-bold text-lg mb-1">{sound.label}</div>
+                  <div className="text-xs opacity-70">{sound.benefits}</div>
+                </div>
+              </button>
+              
+              {/* Tooltip */}
+              {hoveredSound === sound.name && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
+                  <div className="bg-timer/95 backdrop-blur-md border border-timer/30 rounded-xl p-4 shadow-xl max-w-xs">
+                    <div className="text-sm text-text/90 leading-relaxed">
+                      {sound.description}
+                    </div>
+                    {/* Arrow */}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                      <div className="w-3 h-3 bg-timer/95 border-r border-b border-timer/30 transform rotate-45"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           )
         })}
       </div>

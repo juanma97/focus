@@ -3,7 +3,7 @@ import SoundPlayer from './SoundPlayer'
 function FocusMode() {
   return (
     <div className="w-11/12 mx-auto">
-      <div className="card bg-timer/40 backdrop-blur-md">
+      <div className="card bg-timer/20 backdrop-blur-sm">
         {/* Content */}
         <div className="text-center">
           <div className="mb-16">
