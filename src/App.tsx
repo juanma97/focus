@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PomodoroTimer from './components/PomodoroTimer'
 import FocusMode from './components/FocusMode'
 import AnimatedBackground from './components/AnimatedBackground'
+import BuyMeACoffee from './components/BuyMeACoffee'
 
 type Mode = 'pomodoro' | 'focus'
 
@@ -12,6 +13,9 @@ function App() {
     <div className="min-h-screen bg-primary flex flex-col relative">
       {/* Animated Background */}
       <AnimatedBackground />
+      
+      {/* Buy Me a Coffee Button */}
+      <BuyMeACoffee />
       
       {/* Header */}
       <header className="p-4 relative z-10">
