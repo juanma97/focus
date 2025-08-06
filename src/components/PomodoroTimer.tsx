@@ -66,11 +66,11 @@ function PomodoroTimer() {
   const progress = ((isBreak ? config.breakDuration * 60 : config.workDuration * 60) - timeLeft) / (isBreak ? config.breakDuration * 60 : config.workDuration * 60)
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="card">
+    <div className="w-full max-w-4xl mx-auto h-full flex flex-col">
+      <div className="card bg-timer/80 backdrop-blur-md flex-1 flex flex-col">
         {/* Timer Display */}
-        <div className="text-center mb-8">
-          <div className="relative w-64 h-64 mx-auto mb-6">
+        <div className="text-center mb-8 flex-1 flex flex-col justify-center">
+          <div className="relative w-72 h-72 mx-auto mb-6">
             {/* Progress Circle */}
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
               <circle
@@ -78,27 +78,28 @@ function PomodoroTimer() {
                 cy="50"
                 r="45"
                 fill="none"
-                stroke="#2E2E3E"
+                stroke="#1E1E2F"
                 strokeWidth="8"
+                opacity="0.3"
               />
               <circle
                 cx="50"
                 cy="50"
                 r="45"
                 fill="none"
-                stroke="#FF6B6B"
+                stroke={isBreak ? "#4F46E5" : "#FF6B6B"}
                 strokeWidth="8"
                 strokeDasharray={`${2 * Math.PI * 45}`}
                 strokeDashoffset={`${2 * Math.PI * 45 * (1 - progress)}`}
                 strokeLinecap="round"
-                className="transition-all duration-1000 ease-out"
+                className="transition-all duration-1000 ease-out drop-shadow-lg"
               />
             </svg>
             
             {/* Time Display */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-5xl font-bold text-text mb-2">
+                <div className="text-6xl font-bold text-text mb-2">
                   {formatTime(timeLeft)}
                 </div>
                 <div className="text-lg text-text/70">
@@ -110,25 +111,25 @@ function PomodoroTimer() {
         </div>
 
         {/* Controls */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-6 mb-8">
           {!isRunning ? (
-            <button onClick={startTimer} className="btn-primary">
+            <button onClick={startTimer} className="btn-primary text-lg px-8 py-4">
               Iniciar
             </button>
           ) : (
-            <button onClick={pauseTimer} className="btn-secondary">
+            <button onClick={pauseTimer} className="btn-secondary text-lg px-8 py-4">
               Pausar
             </button>
           )}
-          <button onClick={resetTimer} className="btn-secondary">
+          <button onClick={resetTimer} className="btn-secondary text-lg px-8 py-4">
             Reset
           </button>
         </div>
 
         {/* Configuration */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-text/80 mb-2 font-medium">
+            <label className="block text-text/80 mb-2 font-medium text-sm">
               Duración trabajo (min)
             </label>
             <input
@@ -143,11 +144,11 @@ function PomodoroTimer() {
                   setTimeLeft(value * 60)
                 }
               }}
-              className="w-full bg-primary border border-timer rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-colors"
+              className="w-full bg-primary border border-timer rounded-xl px-3 py-2 text-text focus:outline-none focus:border-accent transition-colors text-sm"
             />
           </div>
           <div>
-            <label className="block text-text/80 mb-2 font-medium">
+            <label className="block text-text/80 mb-2 font-medium text-sm">
               Duración descanso (min)
             </label>
             <input
@@ -162,13 +163,15 @@ function PomodoroTimer() {
                   setTimeLeft(value * 60)
                 }
               }}
-              className="w-full bg-primary border border-timer rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-colors"
+              className="w-full bg-primary border border-timer rounded-xl px-3 py-2 text-text focus:outline-none focus:border-accent transition-colors text-sm"
             />
           </div>
         </div>
 
         {/* Sound Player */}
-        <SoundPlayer />
+        <div className="border-t border-timer/20 pt-6">
+          <SoundPlayer />
+        </div>
       </div>
     </div>
   )

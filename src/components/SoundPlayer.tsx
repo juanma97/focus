@@ -64,7 +64,7 @@ function SoundPlayer() {
   }
 
   return (
-    <div className="border-t border-timer/20 pt-6">
+    <div>
       <h3 className="text-xl font-semibold text-text mb-4 text-center">
         Sonidos de Fondo
       </h3>
@@ -86,38 +86,38 @@ function SoundPlayer() {
         ))}
       </div>
 
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        {/* Volume Control */}
-        <div className="flex items-center gap-3">
-          <span className="text-text/70 text-sm">Volumen:</span>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value={volume}
-            onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-            className="w-24 h-2 bg-timer rounded-lg appearance-none cursor-pointer slider"
-          />
-          <span className="text-text/70 text-sm w-8">
-            {Math.round(volume * 100)}%
-          </span>
-        </div>
+              {/* Controls */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          {/* Volume Control */}
+          <div className="flex items-center gap-3">
+            <span className="text-text/70 text-sm font-medium">Volumen:</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={volume}
+              onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+              className="w-24 h-2 bg-timer rounded-lg appearance-none cursor-pointer slider"
+            />
+            <span className="text-text/70 text-sm font-medium w-8">
+              {Math.round(volume * 100)}%
+            </span>
+          </div>
 
-        {/* Stop Button */}
-        <button
-          onClick={stopSound}
-          disabled={!isPlaying}
-          className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-            isPlaying
-              ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'bg-timer/30 text-text/50 cursor-not-allowed'
-          }`}
-        >
-          Detener
-        </button>
-      </div>
+          {/* Stop Button */}
+          <button
+            onClick={stopSound}
+            disabled={!isPlaying}
+            className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 text-sm ${
+              isPlaying
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-timer/30 text-text/50 cursor-not-allowed'
+            }`}
+          >
+            Detener
+          </button>
+        </div>
 
       {/* Hidden Audio Element */}
       <audio ref={audioRef} />

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PomodoroTimer from './components/PomodoroTimer'
 import FocusMode from './components/FocusMode'
+import AnimatedBackground from './components/AnimatedBackground'
 
 type Mode = 'pomodoro' | 'focus'
 
@@ -8,20 +9,20 @@ function App() {
   const [mode, setMode] = useState<Mode>('pomodoro')
 
   return (
-    <div className="min-h-screen bg-primary flex flex-col">
+    <div className="min-h-screen bg-primary flex flex-col relative">
+      {/* Animated Background */}
+      <AnimatedBackground />
+      
       {/* Header */}
-      <header className="p-6">
+      <header className="p-4 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-center text-text mb-8">
-            PomodoroFocus
-          </h1>
           
           {/* Mode Selector */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-timer rounded-2xl p-2 flex gap-2">
+          <div className="flex justify-center mb-4">
+            <div className="bg-timer rounded-2xl p-2 flex gap-4">
               <button
                 onClick={() => setMode('pomodoro')}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-9 py-3 rounded-xl font-medium transition-all duration-200 ${
                   mode === 'pomodoro'
                     ? 'bg-accent text-white shadow-lg'
                     : 'text-text hover:bg-timer/50'
@@ -31,7 +32,7 @@ function App() {
               </button>
               <button
                 onClick={() => setMode('focus')}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-6 py-4 rounded-xl font-medium transition-all duration-200 ${
                   mode === 'focus'
                     ? 'bg-accent text-white shadow-lg'
                     : 'text-text hover:bg-timer/50'
@@ -45,8 +46,8 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="max-w-4xl w-full">
+      <main className="flex-1 flex items-center justify-center p-4 relative z-10 min-h-0">
+        <div className="max-w-4xl w-full h-full">
           {mode === 'pomodoro' ? <PomodoroTimer /> : <FocusMode />}
         </div>
       </main>
