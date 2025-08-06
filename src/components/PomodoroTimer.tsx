@@ -138,9 +138,10 @@ function PomodoroTimer() {
 
 
         {/* Configuration */}
-        <div className="flex flex-col items-center gap-4 mb-6">
+        <div className="w-full flex justify-center mb-6">
+          <div className="flex flex-col items-start gap-4">
           {/* Work Duration */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ">
             <div className="w-3 h-3 bg-accent rounded-full"></div>
             <div className="flex items-center gap-2">
               <button
@@ -236,6 +237,7 @@ function PomodoroTimer() {
             </div>
             <span className="text-text/60 text-sm">min descanso</span>
           </div>
+        </div>
         </div>
 
         {/* Sound Player */}
