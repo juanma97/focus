@@ -15,7 +15,7 @@ function PomodoroTimer() {
     breakDuration: 5
   })
   
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const intervalRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (isRunning) {
