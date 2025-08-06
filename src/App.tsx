@@ -4,6 +4,7 @@ import FocusMode from './components/FocusMode'
 import AnimatedBackground from './components/AnimatedBackground'
 import BuyMeACoffee from './components/BuyMeACoffee'
 import FullscreenButton from './components/FullscreenButton'
+import LiveCounter from './components/LiveCounter'
 
 type Mode = 'pomodoro' | 'focus'
 
@@ -22,7 +23,7 @@ function App() {
       <BuyMeACoffee />
       
       {/* Header */}
-      <header className="p-4 relative z-10">
+      <header className="p-4 pb-2 relative z-10">
         <div className="max-w-4xl mx-auto">
           
           {/* Mode Selector */}
@@ -50,11 +51,14 @@ function App() {
               </button>
             </div>
           </div>
+
+          {/* Live Counter */}
+          <LiveCounter />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-4 relative z-10 min-h-0">
+      <main className="flex-1 flex items-center justify-center p-4 pt-2 relative z-10 min-h-0">
         <div className="w-full h-full">
           {mode === 'pomodoro' ? <PomodoroTimer /> : <FocusMode />}
         </div>
