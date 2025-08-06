@@ -22,8 +22,7 @@ function PomodoroTimer() {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            // Timer finished
-            setIsRunning(false)
+            // Timer finished - switch mode and continue automatically
             setIsBreak(!isBreak)
             return isBreak ? config.workDuration * 60 : config.breakDuration * 60
           }
@@ -127,44 +126,103 @@ function PomodoroTimer() {
         </div>
 
         {/* Configuration */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label className="block text-text/80 mb-2 font-medium text-sm">
-              Duración trabajo (min)
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="60"
-              value={config.workDuration}
-              onChange={(e) => {
-                const value = parseInt(e.target.value)
-                setConfig(prev => ({ ...prev, workDuration: value }))
-                if (!isRunning && !isBreak) {
-                  setTimeLeft(value * 60)
-                }
-              }}
-              className="w-full bg-primary border border-timer rounded-xl px-3 py-2 text-text focus:outline-none focus:border-accent transition-colors text-sm"
-            />
+        <div className="flex flex-col items-center gap-4 mb-6">
+          {/* Work Duration */}
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-accent rounded-full"></div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (!isRunning) {
+                    const newValue = Math.max(1, config.workDuration - 5)
+                    setConfig(prev => ({ ...prev, workDuration: newValue }))
+                    if (!isBreak) {
+                      setTimeLeft(newValue * 60)
+                    }
+                  }
+                }}
+                disabled={isRunning}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  isRunning 
+                    ? 'bg-primary/20 text-text/30 cursor-not-allowed'
+                    : 'bg-primary/50 hover:bg-primary/70 text-text/70 hover:text-text'
+                }`}
+              >
+                -
+              </button>
+              <span className="text-lg font-bold text-text min-w-[3rem] text-center">
+                {config.workDuration}
+              </span>
+              <button
+                onClick={() => {
+                  if (!isRunning) {
+                    const newValue = Math.min(60, config.workDuration + 5)
+                    setConfig(prev => ({ ...prev, workDuration: newValue }))
+                    if (!isBreak) {
+                      setTimeLeft(newValue * 60)
+                    }
+                  }
+                }}
+                disabled={isRunning}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  isRunning 
+                    ? 'bg-primary/20 text-text/30 cursor-not-allowed'
+                    : 'bg-primary/50 hover:bg-primary/70 text-text/70 hover:text-text'
+                }`}
+              >
+                +
+              </button>
+            </div>
+            <span className="text-text/60 text-sm">min trabajo</span>
           </div>
-          <div>
-            <label className="block text-text/80 mb-2 font-medium text-sm">
-              Duración descanso (min)
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="30"
-              value={config.breakDuration}
-              onChange={(e) => {
-                const value = parseInt(e.target.value)
-                setConfig(prev => ({ ...prev, breakDuration: value }))
-                if (!isRunning && isBreak) {
-                  setTimeLeft(value * 60)
-                }
-              }}
-              className="w-full bg-primary border border-timer rounded-xl px-3 py-2 text-text focus:outline-none focus:border-accent transition-colors text-sm"
-            />
+
+          {/* Break Duration */}
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (!isRunning) {
+                    const newValue = Math.max(1, config.breakDuration - 1)
+                    setConfig(prev => ({ ...prev, breakDuration: newValue }))
+                    if (isBreak) {
+                      setTimeLeft(newValue * 60)
+                    }
+                  }
+                }}
+                disabled={isRunning}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  isRunning 
+                    ? 'bg-primary/20 text-text/30 cursor-not-allowed'
+                    : 'bg-primary/50 hover:bg-primary/70 text-text/70 hover:text-text'
+                }`}
+              >
+                -
+              </button>
+              <span className="text-lg font-bold text-text min-w-[3rem] text-center">
+                {config.breakDuration}
+              </span>
+              <button
+                onClick={() => {
+                  if (!isRunning) {
+                    const newValue = Math.min(30, config.breakDuration + 1)
+                    setConfig(prev => ({ ...prev, breakDuration: newValue }))
+                    if (isBreak) {
+                      setTimeLeft(newValue * 60)
+                    }
+                  }
+                }}
+                disabled={isRunning}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                  isRunning 
+                    ? 'bg-primary/20 text-text/30 cursor-not-allowed'
+                    : 'bg-primary/50 hover:bg-primary/70 text-text/70 hover:text-text'
+                }`}
+              >
+                +
+              </button>
+            </div>
+            <span className="text-text/60 text-sm">min descanso</span>
           </div>
         </div>
 

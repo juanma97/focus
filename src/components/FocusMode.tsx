@@ -32,13 +32,6 @@ function FocusMode() {
             </div>
           </div>
 
-          {/* Action Button */}
-          <div className="mb-16">
-            <button className="btn-primary text-xl px-10 py-5">
-              Terminar Sesión
-            </button>
-          </div>
-
           {/* Sound Player */}
           <div className="border-t border-timer/20 pt-8">
             <SoundPlayer />
