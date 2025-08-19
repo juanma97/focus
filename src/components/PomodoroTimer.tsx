@@ -23,7 +23,9 @@ function PomodoroTimer() {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            // Timer finished - switch mode and continue automatically
+            // Timer finished - dispatch event and switch mode automatically
+            const eventName = isBreak ? 'pomodoro:break_end' : 'pomodoro:work_end'
+            window.dispatchEvent(new Event(eventName))
             setIsBreak(!isBreak)
             return isBreak ? config.workDuration * 60 : config.breakDuration * 60
           }
