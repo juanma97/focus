@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface Sound {
   name: string
@@ -11,9 +11,15 @@ interface Sound {
 function SoundPlayer() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentSound, setCurrentSound] = useState<string | null>(null)
+  const [lastSelectedSound, setLastSelectedSound] = useState<string | null>(null)
+  const [resumeOnBreakEnd, setResumeOnBreakEnd] = useState(false)
   const [volume, setVolume] = useState(0.5)
   const [hoveredSound, setHoveredSound] = useState<string | null>(null)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const gainNodeRef = useRef<GainNode | null>(null)
+  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null)
+  const bufferCacheRef = useRef<Map<string, AudioBuffer>>(new Map())
 
   const sounds: Sound[] = [
     { 
@@ -39,39 +45,93 @@ function SoundPlayer() {
     }
   ]
 
-  const playSound = (soundName: string) => {
-    if (currentSound === soundName && isPlaying) {
-      // Stop current sound
-      if (audioRef.current) {
-        audioRef.current.pause()
-        audioRef.current.currentTime = 0
-      }
-      setIsPlaying(false)
-      setCurrentSound(null)
-    } else {
-      // Play new sound
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
-      
-      const sound = sounds.find(s => s.name === soundName)
-      if (sound) {
-        if (audioRef.current) {
-          audioRef.current.src = sound.file
-          audioRef.current.volume = volume
-          audioRef.current.loop = true
-          audioRef.current.play()
-          setIsPlaying(true)
-          setCurrentSound(soundName)
-        }
-      }
+  const ensureAudioContext = async () => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)()
+    }
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume()
+    }
+    if (!gainNodeRef.current) {
+      const gain = audioContextRef.current.createGain()
+      gain.gain.value = volume
+      gain.connect(audioContextRef.current.destination)
+      gainNodeRef.current = gain
     }
   }
 
-  const stopSound = () => {
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current.currentTime = 0
+  const fetchAndDecodeBuffer = async (url: string): Promise<AudioBuffer> => {
+    const cached = bufferCacheRef.current.get(url)
+    if (cached) return cached
+    const response = await fetch(url)
+    const arrayBuffer = await response.arrayBuffer()
+    const audioBuffer = await audioContextRef.current!.decodeAudioData(arrayBuffer)
+    bufferCacheRef.current.set(url, audioBuffer)
+    return audioBuffer
+  }
+
+  const detectLoopPoints = (buffer: AudioBuffer) => {
+    const channelData = buffer.getChannelData(0)
+    const length = channelData.length
+    const threshold = 0.0008
+    let startIndex = 0
+    let endIndex = length - 1
+
+    for (let i = 0; i < length; i++) {
+      if (Math.abs(channelData[i]) > threshold) {
+        startIndex = Math.max(0, i - 100)
+        break
+      }
+    }
+    for (let i = length - 1; i >= 0; i--) {
+      if (Math.abs(channelData[i]) > threshold) {
+        endIndex = Math.min(length - 1, i + 100)
+        break
+      }
+    }
+    const loopStart = startIndex / buffer.sampleRate
+    const loopEnd = Math.max(loopStart + 0.1, endIndex / buffer.sampleRate)
+    return { loopStart, loopEnd }
+  }
+
+  const startBufferLoop = (buffer: AudioBuffer) => {
+    if (!audioContextRef.current || !gainNodeRef.current) return
+    if (sourceNodeRef.current) {
+      try { sourceNodeRef.current.stop() } catch {}
+      sourceNodeRef.current.disconnect()
+      sourceNodeRef.current = null
+    }
+    const source = audioContextRef.current.createBufferSource()
+    source.buffer = buffer
+    const { loopStart, loopEnd } = detectLoopPoints(buffer)
+    source.loop = true
+    source.loopStart = loopStart
+    source.loopEnd = loopEnd
+    source.connect(gainNodeRef.current)
+    source.start(0, loopStart)
+    sourceNodeRef.current = source
+    setIsPlaying(true)
+  }
+
+  const playSound = async (soundName: string) => {
+    if (currentSound === soundName && isPlaying) {
+      await stopSound()
+      return
+    }
+    const sound = sounds.find(s => s.name === soundName)
+    if (!sound) return
+    await ensureAudioContext()
+    const buffer = await fetchAndDecodeBuffer(sound.file)
+    startBufferLoop(buffer)
+    setCurrentSound(soundName)
+    setLastSelectedSound(soundName)
+  }
+
+  const stopSound = async () => {
+    if (sourceNodeRef.current) {
+      try { sourceNodeRef.current.stop() } catch {}
+      sourceNodeRef.current.disconnect()
+      sourceNodeRef.current = null
     }
     setIsPlaying(false)
     setCurrentSound(null)
@@ -79,10 +139,77 @@ function SoundPlayer() {
 
   const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume)
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume
+    if (gainNodeRef.current) {
+      const now = audioContextRef.current?.currentTime ?? 0
+      gainNodeRef.current.gain.cancelScheduledValues(now)
+      gainNodeRef.current.gain.setTargetAtTime(newVolume, now, 0.01)
     }
   }
+
+  const playSoftBell = async () => {
+    await ensureAudioContext()
+    const ctx = audioContextRef.current!
+    const master = ctx.createGain()
+    master.gain.value = 0.0
+    master.connect(ctx.destination)
+
+    const partials = [
+      { freq: 880, gain: 0.7 },
+      { freq: 1320, gain: 0.4 },
+      { freq: 1760, gain: 0.25 }
+    ]
+
+    const ringDuration = 1.2
+    const now = ctx.currentTime
+    master.gain.setValueAtTime(0, now)
+    master.gain.linearRampToValueAtTime(0.5, now + 0.02)
+    master.gain.setTargetAtTime(0, now + 0.05, 0.6)
+
+    partials.forEach(p => {
+      const osc = ctx.createOscillator()
+      const g = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.value = p.freq
+      g.gain.value = p.gain
+      osc.connect(g)
+      g.connect(master)
+      osc.start(now)
+      osc.stop(now + ringDuration)
+    })
+  }
+
+  useEffect(() => {
+    const onWorkEnd = async () => {
+      if (isPlaying) {
+        setResumeOnBreakEnd(true)
+        await stopSound()
+      }
+      await playSoftBell()
+    }
+    const onBreakEnd = async () => {
+      await playSoftBell()
+      if (resumeOnBreakEnd && lastSelectedSound) {
+        setResumeOnBreakEnd(false)
+        await playSound(lastSelectedSound)
+      }
+    }
+    const onBell = async () => {
+      await playSoftBell()
+    }
+
+    const workHandler = () => { onWorkEnd() }
+    const breakHandler = () => { onBreakEnd() }
+    const bellHandler = () => { onBell() }
+
+    window.addEventListener('pomodoro:work_end', workHandler)
+    window.addEventListener('pomodoro:break_end', breakHandler)
+    window.addEventListener('pomodoro:bell', bellHandler)
+    return () => {
+      window.removeEventListener('pomodoro:work_end', workHandler)
+      window.removeEventListener('pomodoro:break_end', breakHandler)
+      window.removeEventListener('pomodoro:bell', bellHandler)
+    }
+  }, [isPlaying, resumeOnBreakEnd, lastSelectedSound])
 
   return (
     <div>
@@ -189,8 +316,7 @@ function SoundPlayer() {
           </button>
         </div>
 
-      {/* Hidden Audio Element */}
-      <audio ref={audioRef} />
+      {/* Web Audio API, no visible media element */}
     </div>
   )
 }
